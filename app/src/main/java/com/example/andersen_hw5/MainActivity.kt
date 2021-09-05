@@ -15,10 +15,5 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction().replace(R.id.flFragment,
             ContactListFragment.newInstance()).commit()
     }
-
-    override fun onBackPressed() {
-        supportFragmentManager.beginTransaction().replace(R.id.flFragment,
-            ContactListFragment.newInstance()).commit()
-    }
-
+    
 }

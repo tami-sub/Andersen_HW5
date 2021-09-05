@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.FragmentResultListener
 import com.example.andersen_hw5.contacts.Contacts
 import com.example.andersen_hw5.databinding.FragmentContactDetailsBinding
@@ -16,6 +17,15 @@ class ContactDetails : Fragment() {
     private lateinit var binding:FragmentContactDetailsBinding
     private val contacts = Contacts()
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        activity?.onBackPressedDispatcher?.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                parentFragmentManager.beginTransaction().replace(R.id.flFragment,
+                    ContactListFragment.newInstance()).commit()
+            }
+        })
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
