@@ -6,32 +6,35 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import android.widget.Toast
 import com.example.andersen_hw5.contacts.Contact
 import com.example.andersen_hw5.contacts.Contacts
 import com.example.andersen_hw5.databinding.ContactListFragmentBinding
 
-class ContactListFragment : Fragment(), View.OnClickListener{
+class ContactListFragment : Fragment(), View.OnClickListener {
 
-    private lateinit var binding:ContactListFragmentBinding
-    private val contacts = Contacts()
+    private lateinit var binding: ContactListFragmentBinding
+    private var contacts = Contacts()
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? {
+    ): View {
         binding = ContactListFragmentBinding.inflate(inflater)
 
-        for (currentContact in contacts.getContacts()){
-            initContactInfo(currentContact.key, currentContact.value)
-        }
+        initAllContacts()
+
+        parentFragmentManager.setFragmentResultListener("dataFrag2", this, { _, result ->
+            contacts = result.getParcelable("getAllContacts")!!
+            initAllContacts()
+        })
 
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        with(binding){
+        with(binding) {
             contactHandle(contact1)
             contactHandle(contact2)
             contactHandle(contact3)
@@ -43,19 +46,26 @@ class ContactListFragment : Fragment(), View.OnClickListener{
     }
 
     override fun onClick(p0: View?) {
-        val result =  Bundle()
-        val data = p0?.let { resources.getResourceEntryName(it.id)}
+        val result = Bundle()
+        val data = p0?.let { resources.getResourceEntryName(it.id) }
         if (data != null) {
             result.putString("data", data[data.lastIndex].toString())
+            result.putParcelable("allContacts", contacts)
         }
 
-        parentFragmentManager.setFragmentResult("dataFrag1",result)
+        parentFragmentManager.setFragmentResult("dataFrag1", result)
         parentFragmentManager.beginTransaction().replace(R.id.flFragment,
             ContactDetails.newInstance()).commit()
     }
 
     private fun contactHandle(contact: LinearLayout) {
         contact.setOnClickListener(this)
+    }
+
+    private fun initAllContacts() {
+        for (currentContact in contacts.getContacts()) {
+            initContactInfo(currentContact.key, currentContact.value)
+        }
     }
 
     private fun initContactInfo(number: Int, contact: Contact) {
