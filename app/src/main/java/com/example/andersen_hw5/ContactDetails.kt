@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.FragmentResultListener
+import com.example.andersen_hw5.contacts.Contact
 import com.example.andersen_hw5.contacts.Contacts
 import com.example.andersen_hw5.databinding.FragmentContactDetailsBinding
 
@@ -16,6 +17,7 @@ class ContactDetails : Fragment() {
 
     private lateinit var binding:FragmentContactDetailsBinding
     private val contacts = Contacts()
+    private var dataId:Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,13 +34,12 @@ class ContactDetails : Fragment() {
         savedInstanceState: Bundle?,
     ): View? {
         binding = FragmentContactDetailsBinding.inflate(inflater)
-        // Inflate the layout for this fragment
 
         parentFragmentManager.setFragmentResultListener("dataFrag1", this, FragmentResultListener { requestKey, result ->
-            val data = result.getString("data")?.toInt()
-            val name = contacts.getContacts()[data]?.name
-            val surname = contacts.getContacts()[data]?.surname
-            val number = contacts.getContacts()[data]?.number
+            dataId = result.getString("data")?.toInt()!!
+            val name = contacts.getContacts()[dataId]?.name
+            val surname = contacts.getContacts()[dataId]?.surname
+            val number = contacts.getContacts()[dataId]?.number
             with(binding) {
                 detailName.setText(name)
                 detailSurname.setText(surname)
@@ -50,7 +51,17 @@ class ContactDetails : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+        binding.btnSave.setOnClickListener(View.OnClickListener {
+            val name:String
+            val surname:String
+            val number:String
+            with(binding){
+                name = detailName.text.toString()
+                surname = detailSurname.text.toString()
+                number = detailNumber.text.toString()
+                contacts.replace(dataId,Contact(name, surname, number))
+            }
+        })
     }
     companion object {
         fun newInstance() = ContactDetails()
