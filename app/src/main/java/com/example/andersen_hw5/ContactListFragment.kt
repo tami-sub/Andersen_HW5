@@ -1,6 +1,7 @@
 package com.example.andersen_hw5
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -20,16 +21,16 @@ class ContactListFragment : Fragment(), View.OnClickListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
+
         binding = ContactListFragmentBinding.inflate(inflater)
-
         initAllContacts()
-
         parentFragmentManager.setFragmentResultListener("dataFrag2", this, { _, result ->
             contacts = result.getParcelable("getAllContacts")!!
             initAllContacts()
         })
 
         return binding.root
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -53,9 +54,15 @@ class ContactListFragment : Fragment(), View.OnClickListener {
             result.putParcelable("allContacts", contacts)
         }
 
-        parentFragmentManager.setFragmentResult("dataFrag1", result)
-        parentFragmentManager.beginTransaction().replace(R.id.flFragment,
-            ContactDetails.newInstance()).commit()
+        if (resources.configuration?.smallestScreenWidthDp!! >= 600) {
+            parentFragmentManager.setFragmentResult("dataFrag1", result)
+            parentFragmentManager.beginTransaction().replace(R.id.flFragment2,
+                ContactDetails.newInstance()).commit()
+        } else {
+            parentFragmentManager.setFragmentResult("dataFrag1", result)
+            parentFragmentManager.beginTransaction().replace(R.id.flFragment,
+                ContactDetails.newInstance()).commit()
+        }
     }
 
     private fun contactHandle(contact: LinearLayout) {

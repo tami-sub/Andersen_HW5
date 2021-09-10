@@ -1,6 +1,7 @@
 package com.example.andersen_hw5
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -13,13 +14,14 @@ import com.example.andersen_hw5.databinding.FragmentContactDetailsBinding
 class ContactDetails : Fragment() {
 
     private lateinit var binding: FragmentContactDetailsBinding
-    private lateinit var contacts: Contacts
+    private var contacts: Contacts = Contacts()
     private var dataId: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activity?.onBackPressedDispatcher?.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
+                sendToMainFragment(contacts)
                 parentFragmentManager.beginTransaction().replace(R.id.flFragment,
                     ContactListFragment.newInstance()).commit()
             }
@@ -55,6 +57,7 @@ class ContactDetails : Fragment() {
             val name: String
             val surname: String
             val number: String
+
             with(binding) {
                 name = detailName.text.toString()
                 surname = detailSurname.text.toString()
@@ -62,13 +65,19 @@ class ContactDetails : Fragment() {
                 contacts.replace(dataId, Contact(name, surname, number))
             }
 
-            val result = Bundle()
-            result.putParcelable("getAllContacts", contacts)
-            parentFragmentManager.setFragmentResult("dataFrag2", result)
+            sendToMainFragment(contacts)
 
+            if (resources.configuration?.smallestScreenWidthDp!! < 600) {
             parentFragmentManager.beginTransaction().replace(R.id.flFragment,
                 ContactListFragment.newInstance()).commit()
+            }
         }
+    }
+
+    private fun sendToMainFragment(contacts:Contacts) {
+        val result = Bundle()
+        result.putParcelable("getAllContacts", contacts)
+        parentFragmentManager.setFragmentResult("dataFrag2", result)
     }
 
     companion object {
